@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\{
 };
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\{
-    Table, TableCell, TableSeparator
+    ProgressBar, Table, TableCell, TableSeparator
 };
 use Symfony\Component\Console\Question\{
     Question, ChoiceQuestion
@@ -106,14 +106,17 @@ class RequestCommand extends Command
 
         $days = (int)$dt->format('t');
 
-        // TODO: add Progress bar here, since we know amount of iterations
-        echo 'iterations: ' . (int)($days / 3) . PHP_EOL;
+        $progress = new ProgressBar($output, (int)($days / 3));
+        $progress->setFormat('%current%/%max% [%bar%] %message%');
+        $progress->setMessage('');
+        $progress->start();
         for ($i = 2; $i <= $days; $i += 3) {
 
             $d = sprintf("%'02s/%'02s/%s", $i, $dt->format('m'), $dt->format('Y'));
             $parameters['DEPDATE'] = $parameters['RETDATE'] = $d;
 
-            $output->writeln(sprintf('request for %s ', $d));
+            $progress->setMessage(sprintf('request for %s ', $d));
+            $progress->display();
 
             $response = $client->request(
                 'POST',
@@ -128,7 +131,10 @@ class RequestCommand extends Command
             // todo: return full results set with full date, etc. grouping shouldn't be a part of parser
             $departureRes = array_merge($departureRes, Parser::parse($html, Parser::DEPARTURE_CLASSES));
             $returnRes = array_merge($returnRes, Parser::parse($html, Parser::RETURN_CLASSES));
+            $progress->advance();
         }
+        $progress->finish();
+        $progress->clear();
 
         $output->writeln(
             sprintf(
