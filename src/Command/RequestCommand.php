@@ -104,8 +104,7 @@ class RequestCommand extends Command
 
         $departureRes = $returnRes = [];
 
-        // todo: make a function daysInMonth
-        $days = ((int)date('t', mktime(0, 0, 0, $dt->format('m'), 1, $dt->format('Y'))));
+        $days = (int)$dt->format('t');
 
         // TODO: add Progress bar here, since we know amount of iterations
         echo 'iterations: ' . (int)($days / 3) . PHP_EOL;
