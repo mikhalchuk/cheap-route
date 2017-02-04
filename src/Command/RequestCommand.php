@@ -4,7 +4,9 @@ namespace CheapRoute\Command;
 
 use CheapRoute\Service\Parser;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\{
+    InputInterface, InputOption
+};
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\{
     Table, TableCell, TableSeparator
@@ -50,38 +52,59 @@ class RequestCommand extends Command
     {
         $this
             ->setName('flypgs:find')
-            ->setDescription('Creates table with all the flights in the month');
+            ->setDescription('Creates table with all the flights in the month')
+            ->addOption('departureAirport', null, InputOption::VALUE_REQUIRED, 'Departure airport code')
+            ->addOption('arrivalAirport', null, InputOption::VALUE_REQUIRED, 'Arrival airport code')
+            ->addOption('month', null, InputOption::VALUE_REQUIRED, 'Month to find tickets');
+    }
+
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $helper = $this->getHelper('question');
+
+        if (empty($input->getOption('departureAirport'))) {
+            $departureAirport = $helper->ask(
+                $input,
+                $output,
+                new Question('Please enter departure airport code:' . PHP_EOL, 'OZH')
+            );
+            $input->setOption('departureAirport', $departureAirport);
+        }
+        if (empty($input->getOption('arrivalAirport'))) {
+            $arrivalAirport = $helper->ask(
+                $input,
+                $output,
+                new Question('Please enter arrival airport code:' . PHP_EOL, 'AMS')
+            );
+            $input->setOption('arrivalAirport', $arrivalAirport);
+        }
+        if (empty($input->getOption('month'))) {
+            $month = $helper->ask(
+                $input,
+                $output,
+                new ChoiceQuestion('Please enter month to find tickets', self::MONTHS)
+            );
+            $input->setOption('month', $month);
+        }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $helper = $this->getHelper('question');
-
-        $q1 = new Question('Please enter departure airport code:' . PHP_EOL, 'OZH');
-        $departureAirport = $helper->ask($input, $output, $q1);
-
-        $q2 = new Question('Please enter arrival airport code:' . PHP_EOL, 'AMS');
-        $arrivalAirport = $helper->ask($input, $output, $q2);
-
-        $q3 = new ChoiceQuestion('Please enter month to find tickets', self::MONTHS);
-        $month = $helper->ask($input, $output, $q3);
-
         $dt = \DateTime::createFromFormat(
             'j F',
-            "1 $month"
+            "1 ".$input->getOption('month')
         );
 
         $parameters = self::PARAMETERS + [
-            'DEPPORT' => $departureAirport,
-            'ARRPORT' => $arrivalAirport,
+            'DEPPORT' => $input->getOption('departureAirport'),
+            'ARRPORT' => $input->getOption('arrivalAirport'),
         ];
 
         $client = new \GuzzleHttp\Client();
 
         $departureRes = $returnRes = [];
 
-        // todo: make a function daysInMonth
-        $days = ((int)date('t', mktime(0, 0, 0, $dt->format('m'), 1, $dt->format('Y'))));
+        $days = (int)$dt->format('t');
 
         // TODO: add Progress bar here, since we know amount of iterations
         echo 'iterations: ' . (int)($days / 3) . PHP_EOL;
@@ -108,7 +131,12 @@ class RequestCommand extends Command
         }
 
         $output->writeln(
-            sprintf('<info>%s %s flights in %s</info>', $departureAirport, $arrivalAirport, $dt->format('F'))
+            sprintf(
+                '<info>%s %s flights in %s</info>',
+                $input->getOption('departureAirport'),
+                $input->getOption('arrivalAirport'),
+                $dt->format('F')
+            )
         );
 
         $output->writeln('<info>Departure Flights</info>');
