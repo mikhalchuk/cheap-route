@@ -1,6 +1,6 @@
 <?php
 
-namespace CheapRoute\Tests\Service;
+namespace CheapRoute\Tests\Unit\Service;
 
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class ParserTest extends TestCase
     public function getHtml()
     {
         return file_get_contents(
-            __DIR__ . '/../data/flypgs_response.html'
+            __DIR__ . '/../../data/flypgs_response.html'
         );
     }
 
