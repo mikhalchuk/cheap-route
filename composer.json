@@ -3,7 +3,8 @@
     "description": "Project to find cheap routes",
     "type": "project",
     "require-dev": {
-        "symfony/var-dumper": "^3.2"
+        "symfony/var-dumper": "^3.2",
+        "phpunit/phpunit": "^6.0"
     },
     "require": {
         "symfony/console": "^3.2",

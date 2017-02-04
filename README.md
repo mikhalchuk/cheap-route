@@ -17,3 +17,8 @@ $ composer install
 $ docker-compose up
 
 $ php bin/console.php
+
+
+## How to run tests?
+
+$ ./vendor/bin/phpunit -c tests/phpunit.xml
