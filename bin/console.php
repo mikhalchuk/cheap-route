@@ -7,14 +7,13 @@ set_time_limit(0);
 
 use Symfony\Component\Console\Application;
 use CheapRoute\Command\{
-    RequestCommand, ParseCommand
+    RequestCommand
 };
 
 $application  = new Application('Cheap Route', '0.0.1');
 
 $application->addCommands([
     new RequestCommand(),
-    new ParseCommand(),
 ]);
 
 $application->run();
