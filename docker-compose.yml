@@ -4,10 +4,11 @@ services:
     build: ./docker/php
     volumes:
       - ./:/var/www/html
-    container_name: php7
+    container_name: cheap-route
     links:
       - mongodb
   mongodb:
     image: mongo:3.4
     volumes:
       - ./docker/mongodb/data:/data/db
+

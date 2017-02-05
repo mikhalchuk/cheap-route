@@ -2,7 +2,7 @@ FROM php:7.1-fpm
 
 RUN set -x \
     && apt-get update \
-    && apt-get install -y git libssl-dev \
+    && apt-get install -y unzip git libssl-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pecl install mongodb \
     && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
