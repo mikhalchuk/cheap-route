@@ -21,4 +21,8 @@ $ php bin/console.php
 
 ## How to run tests?
 
+unit tests:
 $ ./vendor/bin/phpunit -c tests/phpunit.xml
+
+functional (behat) test:
+$ ./vendor/bin/behat --config tests/behat.yml

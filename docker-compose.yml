@@ -4,4 +4,4 @@ services:
     build: .
     volumes:
       - ./:/var/www/html
-    container_name: php7
+    container_name: cheap-route
