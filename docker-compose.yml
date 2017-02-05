@@ -1,7 +1,13 @@
 version: '2'
 services:
   php:
-    build: .
+    build: ./docker/php
     volumes:
       - ./:/var/www/html
     container_name: php7
+    links:
+      - mongodb
+  mongodb:
+    image: mongo:3.4
+    volumes:
+      - ./docker/mongodb/data:/data/db
