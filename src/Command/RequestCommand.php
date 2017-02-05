@@ -107,15 +107,18 @@ class RequestCommand extends Command
         $days = (int)$dt->format('t');
 
         $progress = new ProgressBar($output, (int)($days / 3));
-        $progress->setFormat('%current%/%max% [%bar%] %message%');
+        $progress->setFormat("%message%\n%current%/%max% %bar% %percent%%");
         $progress->setMessage('');
+        $progress->setProgressCharacter("\xE2\x9C\x88");
+        $progress->setEmptyBarCharacter("<fg=red>\xE2\x8B\x85</>");
+        $progress->setBarCharacter("<fg=green>\xE2\x8B\x85</>");
         $progress->start();
         for ($i = 2; $i <= $days; $i += 3) {
 
             $d = sprintf("%'02s/%'02s/%s", $i, $dt->format('m'), $dt->format('Y'));
             $parameters['DEPDATE'] = $parameters['RETDATE'] = $d;
 
-            $progress->setMessage(sprintf('request for %s ', $d));
+            $progress->setMessage(sprintf('Request for %s ', $d));
             $progress->display();
 
             $response = $client->request(
