@@ -1,3 +1,4 @@
+docker/mongodb/data
 vendor
 .idea
 composer.lock
