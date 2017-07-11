@@ -31,12 +31,13 @@ class Parser
 
             $day = substr($date, 0, strrpos($date, ' '));
 
-            /** @var \DOMElement $flightColumn */
-            foreach ($crawler->filterXPath(
-                sprintf('//*[@id="%s"]', $container)
-            )->children() as $flightColumn) {
+            try {
+                /** @var \DOMElement $flightColumn */
+                foreach ($crawler->filterXPath(
+                    sprintf('//*[@id="%s"]', $container)
+                )->children() as $flightColumn) {
 
-                try {
+
                     $colCrawler = new Crawler($flightColumn);
 
                     $departure = $colCrawler->filterXPath('//*/div[1]/div/span[1]')->html();
@@ -54,7 +55,7 @@ class Parser
                     $price = str_replace(chr(160), ' ', $price);
 
                     //for ($i = 0; $i < strlen($price); $i++) {
-                      //  echo $price[$i] . ': ' . ord($price[$i]) . PHP_EOL;
+                    //  echo $price[$i] . ': ' . ord($price[$i]) . PHP_EOL;
                     //}
                     //dump(explode(' ', $price));die;
 
@@ -77,10 +78,10 @@ class Parser
                             'currency' => $currency,
                         ],
                     ];
-                } catch (\InvalidArgumentException $e) {
-                    // TODO: debug the problem
-                    continue;
                 }
+            } catch (\InvalidArgumentException $e) {
+                // TODO: debug the problem
+                continue;
             }
         }
 
