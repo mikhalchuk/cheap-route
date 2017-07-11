@@ -15,6 +15,8 @@ use Symfony\Component\Console\Question\{
     Question, ChoiceQuestion
 };
 
+use MongoDB\Client;
+
 class RequestCommand extends Command
 {
     const FLYPGS_URL = 'https://book.flypgs.com/Common/MemberRezvResults.jsp?activeLanguage=EN';
@@ -55,7 +57,8 @@ class RequestCommand extends Command
             ->setDescription('Creates table with all the flights in the month')
             ->addOption('departureAirport', null, InputOption::VALUE_REQUIRED, 'Departure airport code')
             ->addOption('arrivalAirport', null, InputOption::VALUE_REQUIRED, 'Arrival airport code')
-            ->addOption('month', null, InputOption::VALUE_REQUIRED, 'Month to find tickets');
+            ->addOption('month', null, InputOption::VALUE_REQUIRED, 'Month to find tickets')
+            ->addOption('storeInDb', null, InputOption::VALUE_OPTIONAL, 'Store results in db', false);
     }
 
     protected function interact(InputInterface $input, OutputInterface $output)
@@ -153,6 +156,36 @@ class RequestCommand extends Command
 
         $output->writeln('<info>Return Flights</info>');
         $this->printNew($output, $returnRes);
+
+        if ($input->getOption('storeInDb')) {
+            // todo: the magic starts here
+
+            $dbName = (new \DateTime())->format('Y_m_d');
+            $depCollectionName = strtolower(sprintf(
+                'dep_%s_%s_%s',
+                $parameters['DEPPORT'],
+                $parameters['ARRPORT'],
+                'flypgs'
+            ));
+            $retCollectionName = strtolower(sprintf(
+                'ret_%s_%s_%s',
+                $parameters['DEPPORT'],
+                $parameters['ARRPORT'],
+                'flypgs'
+            ));
+
+            $mongo = new Client(
+                "mongodb://cheaproute_mongodb_1:27017"
+            );
+
+            $db = $mongo->selectDatabase($dbName);
+
+            $depColl = $db->selectCollection($depCollectionName);
+            $retColl = $db->selectCollection($retCollectionName);
+
+            $depColl->insertMany($departureRes);
+            $retColl->insertMany($returnRes);
+        }
     }
 
     protected function printNew(OutputInterface $output, array $res)

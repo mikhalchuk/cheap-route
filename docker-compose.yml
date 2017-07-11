@@ -9,6 +9,6 @@ services:
       - mongodb
   mongodb:
     image: mongo:3.4
+    container_name: cheap-route-mongodb
     volumes:
       - ./docker/mongodb/data:/data/db
-

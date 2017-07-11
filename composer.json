@@ -2,16 +2,17 @@
     "name": "mykhalchuk/cheap-route",
     "description": "Project to find cheap routes",
     "type": "project",
-    "require-dev": {
-        "symfony/var-dumper": "^3.2",
-        "phpunit/phpunit": "^6.0",
-        "behat/behat": "^3.3"
-    },
     "require": {
+        "php": "^7.1",
         "symfony/console": "^3.2",
         "guzzlehttp/guzzle": "^6.2",
         "symfony/dom-crawler": "^3.2",
         "mongodb/mongodb": "^1.1"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^3.2",
+        "phpunit/phpunit": "^6.0",
+        "behat/behat": "^3.3"
     },
     "autoload": {
         "psr-4": {
